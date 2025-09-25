@@ -585,13 +585,22 @@ class CircularPomodoroTimer {
         
         // Update slider dots
         document.querySelectorAll('.slider-dot').forEach(dot => dot.classList.remove('active'));
-        const targetDot = document.getElementById(`${mode}-dot`);
+        
+        // Map mode names to correct dot IDs
+        let targetDotId;
+        if (mode === 'pomodoro') {
+            targetDotId = 'pomodoro-dot';
+        } else if (mode === 'deepWork') {
+            targetDotId = 'deep-work-dot';
+        }
+        
+        const targetDot = document.getElementById(targetDotId);
         console.log(`Target dot element:`, targetDot);
         if (targetDot) {
             targetDot.classList.add('active');
             console.log(`Activated ${mode} dot`);
         } else {
-            console.error(`Dot element ${mode}-dot not found!`);
+            console.error(`Dot element ${targetDotId} not found!`);
         }
         
         // Show/hide mode button groups
