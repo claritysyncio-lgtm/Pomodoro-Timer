@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion-Style CSS Framework - Example</title>
+    <link rel="stylesheet" href="notion-style.css">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="notion-container">
+        <h1 class="notion-title large">Pomodoro Timer</h1>
+        <p class="notion-text muted">A clean, professional timer interface inspired by Notion's design system.</p>
+    </div>
+
+    <!-- Timer Section -->
+    <div class="notion-container">
+        <div class="notion-section-title">Current Session</div>
+        
+        <div class="notion-section">
+            <div class="notion-flex center">
+                <div class="notion-text large" style="font-size: 48px; font-weight: 600; color: var(--notion-blue);">25:00</div>
+            </div>
+            <div class="notion-flex center gap-md" style="margin-top: 16px;">
+                <button class="notion-button">Start</button>
+                <button class="notion-button secondary">Pause</button>
+                <button class="notion-button outline">Reset</button>
+            </div>
+        </div>
+
+        <!-- Session Controls -->
+        <div class="notion-flex between" style="margin-top: 16px;">
+            <div class="notion-dropdown">
+                <select>
+                    <option>25 min</option>
+                    <option>15 min</option>
+                    <option>30 min</option>
+                    <option>45 min</option>
+                </select>
+            </div>
+            <div class="notion-pill primary">Focus Session</div>
+        </div>
+    </div>
+
+    <!-- Task List Section -->
+    <div class="notion-container">
+        <div class="notion-section-title">Today's Tasks</div>
+        
+        <div class="notion-item">
+            <div class="notion-item-left">
+                <div class="notion-circle"></div>
+                <div class="notion-item-meta">
+                    <div class="notion-item-name">Complete project proposal</div>
+                    <div class="notion-item-sub">Due: 3:00 PM</div>
+                </div>
+            </div>
+            <div class="notion-item-right">
+                <span class="notion-pill primary">High Priority</span>
+            </div>
+        </div>
+
+        <div class="notion-item">
+            <div class="notion-item-left">
+                <div class="notion-circle checked"></div>
+                <div class="notion-item-meta">
+                    <div class="notion-item-name">Review team feedback</div>
+                    <div class="notion-item-sub">Completed: 1:30 PM</div>
+                </div>
+            </div>
+            <div class="notion-item-right">
+                <span class="notion-pill success">Done</span>
+            </div>
+        </div>
+
+        <div class="notion-item">
+            <div class="notion-item-left">
+                <div class="notion-circle"></div>
+                <div class="notion-item-meta">
+                    <div class="notion-item-name">Prepare presentation slides</div>
+                    <div class="notion-item-sub">Due: Tomorrow</div>
+                </div>
+            </div>
+            <div class="notion-item-right">
+                <span class="notion-pill warning">Medium</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="notion-container">
+        <div class="notion-section-title">Today's Progress</div>
+        
+        <div class="notion-grid cols-3">
+            <div class="notion-card">
+                <div class="notion-text small muted">Sessions Completed</div>
+                <div class="notion-text large" style="font-weight: 600; color: var(--notion-blue);">8</div>
+            </div>
+            <div class="notion-card">
+                <div class="notion-text small muted">Focus Time</div>
+                <div class="notion-text large" style="font-weight: 600; color: var(--notion-success);">3h 20m</div>
+            </div>
+            <div class="notion-card">
+                <div class="notion-text small muted">Tasks Done</div>
+                <div class="notion-text large" style="font-weight: 600; color: var(--notion-warning);">12</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div style="margin-top: 16px;">
+            <div class="notion-flex between">
+                <span class="notion-text small">Daily Goal Progress</span>
+                <span class="notion-text small muted">80%</span>
+            </div>
+            <div class="notion-progress" style="margin-top: 8px;">
+                <div class="notion-progress-bar" style="width: 80%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="notion-container">
+        <div class="notion-section-title">Settings</div>
+        
+        <div class="notion-section">
+            <div style="margin-bottom: 16px;">
+                <label class="notion-text small" style="display: block; margin-bottom: 4px;">Work Duration (minutes)</label>
+                <input type="number" class="notion-input" value="25" placeholder="Enter duration">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label class="notion-text small" style="display: block; margin-bottom: 4px;">Break Duration (minutes)</label>
+                <input type="number" class="notion-input" value="5" placeholder="Enter break duration">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label class="notion-text small" style="display: block; margin-bottom: 4px;">Long Break Duration (minutes)</label>
+                <input type="number" class="notion-input" value="15" placeholder="Enter long break duration">
+            </div>
+            
+            <div class="notion-flex gap-md">
+                <button class="notion-button success">Save Settings</button>
+                <button class="notion-button secondary">Reset to Default</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Examples -->
+    <div class="notion-container">
+        <div class="notion-section-title">Message Examples</div>
+        
+        <div class="notion-message success">
+            ✅ Great job! You've completed 4 focus sessions today.
+        </div>
+        
+        <div class="notion-message warning">
+            ⚠️ You've been working for 2 hours straight. Consider taking a break.
+        </div>
+        
+        <div class="notion-message error">
+            ❌ Failed to save settings. Please check your connection and try again.
+        </div>
+        
+        <div class="notion-message info">
+            ℹ️ New feature: You can now customize your timer sounds in settings.
+        </div>
+    </div>
+
+    <!-- Loading States -->
+    <div class="notion-container">
+        <div class="notion-section-title">Loading States</div>
+        
+        <div class="notion-loading">
+            <div class="notion-spinner"></div>
+            <span>Loading your data...</span>
+        </div>
+        
+        <div style="margin-top: 16px;">
+            <div class="notion-spinner small"></div>
+            <div class="notion-spinner" style="margin: 16px 0;"></div>
+            <div class="notion-spinner large"></div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="notion-container">
+        <div class="notion-section-title">Empty State</div>
+        <div class="notion-empty">
+            No tasks added yet. Click the "+" button to add your first task.
+        </div>
+    </div>
+
+    <!-- Button Variations -->
+    <div class="notion-container">
+        <div class="notion-section-title">Button Variations</div>
+        
+        <div class="notion-flex gap-md" style="flex-wrap: wrap;">
+            <button class="notion-button">Primary</button>
+            <button class="notion-button secondary">Secondary</button>
+            <button class="notion-button outline">Outline</button>
+            <button class="notion-button success">Success</button>
+            <button class="notion-button danger">Danger</button>
+        </div>
+        
+        <div class="notion-flex gap-md" style="margin-top: 16px; flex-wrap: wrap;">
+            <button class="notion-button small">Small</button>
+            <button class="notion-button">Normal</button>
+            <button class="notion-button large">Large</button>
+        </div>
+        
+        <div style="margin-top: 16px;">
+            <button class="notion-button" disabled>Disabled</button>
+        </div>
+    </div>
+
+    <!-- Input Variations -->
+    <div class="notion-container">
+        <div class="notion-section-title">Input Variations</div>
+        
+        <div style="margin-bottom: 16px;">
+            <input type="text" class="notion-input" placeholder="Normal input field">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <input type="text" class="notion-input small" placeholder="Small input field">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <input type="text" class="notion-input large" placeholder="Large input field">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <input type="text" class="notion-input error" placeholder="Error state input">
+        </div>
+    </div>
+
+    <!-- Typography Examples -->
+    <div class="notion-container">
+        <div class="notion-section-title">Typography</div>
+        
+        <h1 class="notion-title large">Large Title</h1>
+        <h2 class="notion-title">Normal Title</h2>
+        <h3 class="notion-title small">Small Title</h3>
+        
+        <p class="notion-text large">Large text content goes here.</p>
+        <p class="notion-text">Normal text content goes here.</p>
+        <p class="notion-text small">Small text content goes here.</p>
+        <p class="notion-text muted">Muted text content goes here.</p>
+        <p class="notion-text secondary">Secondary text content goes here.</p>
+    </div>
+
+    <hr class="notion-divider">
+
+    <!-- Footer -->
+    <div class="notion-container compact">
+        <div class="notion-text small muted" style="text-align: center;">
+            Built with Notion-style CSS Framework • Clean • Professional • Responsive
+        </div>
+    </div>
+
+    <script>
+        // Simple demo interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle checkboxes
+            const circles = document.querySelectorAll('.notion-circle');
+            circles.forEach(circle => {
+                circle.addEventListener('click', function() {
+                    this.classList.toggle('checked');
+                    const item = this.closest('.notion-item');
+                    item.classList.toggle('completed');
+                });
+            });
+
+            // Button hover effects
+            const buttons = document.querySelectorAll('.notion-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Add a simple ripple effect
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

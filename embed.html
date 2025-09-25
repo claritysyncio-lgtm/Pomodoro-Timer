@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer - Embed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f7f6f3;
+            color: #37352f;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .embed-container {
+            padding: 16px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .embed-timer {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .embed-progress-ring {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: 208px;
+            height: 208px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #e16259 0deg, #e16259 var(--progress-angle, 0deg), #f0f0f0 var(--progress-angle, 0deg));
+            z-index: -1;
+        }
+        
+        .embed-progress-ring::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        .embed-timer-inner {
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .embed-timer-display {
+            font-size: 24px;
+            font-weight: 700;
+            color: #37352f;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 4px;
+        }
+        
+        .embed-timer-mode {
+            font-size: 12px;
+            color: #9b9a97;
+            font-weight: 500;
+        }
+        
+        .embed-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .embed-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .embed-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .embed-btn:hover::before {
+            left: 100%;
+        }
+        
+        .embed-btn.primary {
+            background: #e16259;
+            color: white;
+            box-shadow: 0 2px 8px rgba(225, 98, 89, 0.3);
+        }
+        
+        .embed-btn.primary:hover {
+            background: #d1544a;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(225, 98, 89, 0.4);
+        }
+        
+        .embed-btn.primary:active {
+            transform: translateY(-1px) scale(1.02);
+            transition: all 0.1s ease;
+        }
+        
+        .embed-btn.secondary {
+            background: transparent;
+            color: #37352f;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .embed-btn.secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .embed-btn.secondary:active {
+            transform: translateY(-1px) scale(1.02);
+            transition: all 0.1s ease;
+        }
+        
+        .embed-info {
+            text-align: center;
+            font-size: 11px;
+            color: #9b9a97;
+        }
+        
+        .embed-session-info {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #9b9a97;
+        }
+
+        .embed-shortcuts {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .embed-shortcuts-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .embed-shortcut-btn {
+            padding: 6px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            color: #6b7280;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 40px;
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .embed-shortcut-btn:hover {
+            border-color: #e16259;
+            color: #e16259;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(225, 98, 89, 0.2);
+        }
+
+        .embed-btn-icon {
+            font-size: 10px;
+            margin-bottom: 1px;
+        }
+
+        .embed-btn-text {
+            font-size: 7px;
+            font-weight: 600;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="embed-container">
+        <div class="embed-timer">
+            <div class="embed-progress-ring" id="embed-progress-ring"></div>
+            <div class="embed-timer-inner">
+                <div class="embed-timer-display" id="embed-timer-display">25:00</div>
+                <div class="embed-timer-mode" id="embed-timer-mode">Focus</div>
+            </div>
+        </div>
+        
+        <div class="embed-controls">
+            <button class="embed-btn primary" id="embed-start-btn">Start</button>
+            <button class="embed-btn secondary" id="embed-reset-btn" style="display: none;">Reset</button>
+        </div>
+        
+        <div class="embed-info">
+            <div id="embed-task">No Description</div>
+            <div class="embed-session-info">
+                Session <span id="embed-session-count">1</span> of 4
+            </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="embed-shortcuts">
+            <div class="embed-shortcuts-buttons">
+                <button class="embed-shortcut-btn" id="embed-quick-start" title="Start/Pause">
+                    <span class="embed-btn-icon">▶️</span>
+                    <span class="embed-btn-text">Start</span>
+                </button>
+                <button class="embed-shortcut-btn" id="embed-quick-reset" title="Reset">
+                    <span class="embed-btn-icon">🔄</span>
+                    <span class="embed-btn-text">Reset</span>
+                </button>
+                <button class="embed-shortcut-btn" id="embed-quick-skip" title="Skip">
+                    <span class="embed-btn-icon">⏭️</span>
+                    <span class="embed-btn-text">Skip</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simplified embed version
+        class EmbedPomodoroTimer {
+            constructor() {
+                this.workDuration = 25;
+                this.shortBreakDuration = 5;
+                this.longBreakDuration = 15;
+                this.longBreakInterval = 4;
+                this.currentTime = this.workDuration * 60;
+                this.isRunning = false;
+                this.currentSession = 'work';
+                this.sessionCount = 0;
+                this.timerInterval = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.bindEvents();
+                this.updateDisplay();
+                this.updateProgress();
+                this.bindShortcutButtons();
+            }
+            
+            bindEvents() {
+                document.getElementById('embed-start-btn').addEventListener('click', () => this.toggleTimer());
+                document.getElementById('embed-reset-btn').addEventListener('click', () => this.resetTimer());
+                
+                // Quick action buttons
+                document.getElementById('embed-quick-start').addEventListener('click', () => {
+                    this.toggleTimer();
+                    this.updateQuickButtons();
+                });
+                document.getElementById('embed-quick-reset').addEventListener('click', () => this.resetTimer());
+                document.getElementById('embed-quick-skip').addEventListener('click', () => this.skipSession());
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        this.toggleTimer();
+                    }
+                });
+            }
+            
+            toggleTimer() {
+                if (!this.isRunning) {
+                    this.startTimer();
+                } else {
+                    this.pauseTimer();
+                }
+            }
+            
+            startTimer() {
+                this.isRunning = true;
+                this.timerInterval = setInterval(() => {
+                    this.currentTime--;
+                    this.updateDisplay();
+                    this.updateProgress();
+                    
+                    if (this.currentTime <= 0) {
+                        this.completeSession();
+                    }
+                }, 1000);
+                
+                this.updateButtons();
+            }
+            
+            pauseTimer() {
+                this.isRunning = false;
+                clearInterval(this.timerInterval);
+                this.updateButtons();
+            }
+            
+            resetTimer() {
+                this.isRunning = false;
+                clearInterval(this.timerInterval);
+                this.currentTime = this.getSessionDuration() * 60;
+                this.updateDisplay();
+                this.updateProgress();
+                this.updateButtons();
+            }
+            
+            completeSession() {
+                this.isRunning = false;
+                clearInterval(this.timerInterval);
+                
+                if (this.currentSession === 'work') {
+                    this.sessionCount++;
+                    
+                    if (this.sessionCount % this.longBreakInterval === 0) {
+                        this.currentSession = 'longBreak';
+                    } else {
+                        this.currentSession = 'shortBreak';
+                    }
+                } else {
+                    this.currentSession = 'work';
+                }
+                
+                this.currentTime = this.getSessionDuration() * 60;
+                this.updateDisplay();
+                this.updateProgress();
+                this.updateButtons();
+                this.updateSessionInfo();
+                
+                // Auto-start break sessions
+                if (this.currentSession !== 'work') {
+                    setTimeout(() => {
+                        this.startTimer();
+                    }, 2000);
+                }
+            }
+            
+            getSessionDuration() {
+                switch (this.currentSession) {
+                    case 'work': return this.workDuration;
+                    case 'shortBreak': return this.shortBreakDuration;
+                    case 'longBreak': return this.longBreakDuration;
+                    default: return this.workDuration;
+                }
+            }
+            
+            updateDisplay() {
+                const minutes = Math.floor(this.currentTime / 60);
+                const seconds = this.currentTime % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('embed-timer-display').textContent = display;
+            }
+            
+            updateProgress() {
+                const totalTime = this.getSessionDuration() * 60;
+                const progress = ((totalTime - this.currentTime) / totalTime) * 100;
+                const angle = (progress / 100) * 360;
+                
+                const progressRing = document.getElementById('embed-progress-ring');
+                progressRing.style.setProperty('--progress-angle', `${angle}deg`);
+            }
+            
+            updateButtons() {
+                const startBtn = document.getElementById('embed-start-btn');
+                const resetBtn = document.getElementById('embed-reset-btn');
+                
+                if (this.isRunning) {
+                    startBtn.textContent = 'Pause';
+                    resetBtn.style.display = 'inline-block';
+                } else {
+                    startBtn.textContent = 'Start';
+                    resetBtn.style.display = 'none';
+                }
+            }
+            
+            updateSessionInfo() {
+                const timerMode = document.getElementById('embed-timer-mode');
+                const sessionCount = document.getElementById('embed-session-count');
+                
+                switch (this.currentSession) {
+                    case 'work':
+                        timerMode.textContent = 'Focus';
+                        break;
+                    case 'shortBreak':
+                        timerMode.textContent = 'Short Break';
+                        break;
+                    case 'longBreak':
+                        timerMode.textContent = 'Long Break';
+                        break;
+                }
+                
+                sessionCount.textContent = this.sessionCount + 1;
+            }
+
+            bindShortcutButtons() {
+                document.querySelectorAll('.embed-shortcut-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const key = btn.getAttribute('data-key');
+                        
+                        // Add visual feedback
+                        btn.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            btn.style.transform = '';
+                        }, 100);
+                        
+                        // Trigger the corresponding action
+                        switch (key) {
+                            case 'Space':
+                                this.toggleTimer();
+                                break;
+                            case 'R':
+                                this.resetTimer();
+                                break;
+                            case 'S':
+                                this.skipSession();
+                                break;
+                        }
+                    });
+                });
+            }
+
+            skipSession() {
+                if (this.isRunning) {
+                    this.pauseTimer();
+                }
+                this.completeSession();
+            }
+
+            updateQuickButtons() {
+                const quickStartBtn = document.getElementById('embed-quick-start');
+                const quickStartIcon = quickStartBtn.querySelector('.embed-btn-icon');
+                const quickStartText = quickStartBtn.querySelector('.embed-btn-text');
+                
+                if (this.isRunning) {
+                    quickStartIcon.textContent = '⏸️';
+                    quickStartText.textContent = 'Pause';
+                } else {
+                    quickStartIcon.textContent = '▶️';
+                    quickStartText.textContent = 'Start';
+                }
+            }
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new EmbedPomodoroTimer();
+        });
+    </script>
+</body>
+</html>
