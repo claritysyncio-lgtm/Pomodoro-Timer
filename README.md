@@ -83,3 +83,4 @@ Modify timer durations, colors, and behavior in the settings panel. All preferen
 ---
 
 **Built with ❤️ using Vite + Vanilla JavaScript + Notion-style CSS**
+
