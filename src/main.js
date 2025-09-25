@@ -86,6 +86,9 @@ class CircularPomodoroTimer {
             if (lightWorkPage) {
                 document.getElementById('lightWork-timer-display').textContent = '15:00';
             }
+            
+            // Start the glow animation for the default timer
+            this.startGlowAnimation();
         }, 10);
     }
 
@@ -220,6 +223,7 @@ class CircularPomodoroTimer {
             <!-- Control Buttons -->
             <div class="controls">
                 <button class="control-btn secondary" id="start-btn">Start</button>
+                <button class="control-btn secondary" id="reset-btn">Reset</button>
             </div>
 
 
@@ -258,6 +262,7 @@ class CircularPomodoroTimer {
     bindEvents() {
         // Timer controls
         document.getElementById('start-btn').addEventListener('click', () => this.toggleTimer());
+        document.getElementById('reset-btn').addEventListener('click', () => this.resetTimer());
 
         // Mode slider - check if elements exist
         const pomodoroDot = document.getElementById('pomodoro-dot');
@@ -450,6 +455,9 @@ class CircularPomodoroTimer {
         this.updateProgress();
         this.updateButtons();
         this.updateStatus('Ready to start');
+        
+        // Restart the glow animation after reset
+        this.startGlowAnimation();
     }
 
     getSessionDuration() {
@@ -491,7 +499,17 @@ class CircularPomodoroTimer {
     }
 
     updateProgressSmooth() {
-        if (!this.isRunning || !this.startTime) return;
+        if (!this.isRunning || !this.startTime) {
+            // If timer is not running, show 0% progress
+            const progressRing = document.getElementById(`${this.currentSession}-progress-ring`);
+            const progressDot = document.getElementById(`${this.currentSession}-progress-dot`);
+            
+            if (progressRing && progressDot) {
+                progressRing.style.setProperty('--progress-angle', '0deg');
+                progressDot.style.setProperty('--progress-angle', '0deg');
+            }
+            return;
+        }
         
         const totalTime = this.getSessionDuration() * 60;
         const elapsed = (Date.now() - this.startTime) / 1000; // elapsed time in seconds
@@ -647,7 +665,12 @@ class CircularPomodoroTimer {
         
         // Update the display to show the correct time
         this.updateDisplay();
+        
+        // Reset progress to 0% when switching modes
         this.updateProgress();
+        
+        // Start the glow animation for the selected timer
+        this.startGlowAnimation();
         
         // Stop the timer if it's running
         if (this.isRunning) {
@@ -662,6 +685,35 @@ class CircularPomodoroTimer {
         if (this.progressInterval) {
             clearInterval(this.progressInterval);
             this.progressInterval = null;
+        }
+    }
+
+    startPulseAnimation() {
+        const timerCircle = document.querySelector(`#${this.currentSession}-timer-page .timer-circle`);
+        if (timerCircle) {
+            // Calculate animation duration based on current session duration
+            const sessionDuration = this.getSessionDuration();
+            const animationDuration = sessionDuration * 2; // 2 seconds per minute for slow rhythm
+            
+            timerCircle.style.animation = `pulseSlow ${animationDuration}s ease-in-out infinite`;
+        }
+    }
+
+    stopPulseAnimation() {
+        const timerCircle = document.querySelector(`#${this.currentSession}-timer-page .timer-circle`);
+        if (timerCircle) {
+            timerCircle.style.animation = 'none';
+        }
+    }
+
+    startGlowAnimation() {
+        const timerCircle = document.querySelector(`#${this.currentSession}-timer-page .timer-circle`);
+        if (timerCircle) {
+            // Calculate animation duration based on current session duration
+            const sessionDuration = this.getSessionDuration();
+            const animationDuration = sessionDuration * 2; // 2 seconds per minute for slow rhythm
+            
+            timerCircle.style.animation = `pulseSlow ${animationDuration}s ease-in-out infinite`;
         }
     }
 

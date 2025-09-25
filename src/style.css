@@ -280,7 +280,6 @@ body {
     justify-content: center;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: pulse 2s ease-in-out infinite;
     margin: 0 auto;
 }
 
@@ -289,7 +288,16 @@ body {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
     50% {
-        box-shadow: 0 12px 40px rgba(225, 98, 89, 0.2);
+        box-shadow: 0 0 0 4px rgba(225, 98, 89, 0.08), 0 0 0 8px rgba(225, 98, 89, 0.04), 0 8px 32px rgba(225, 98, 89, 0.15);
+    }
+}
+
+@keyframes pulseSlow {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(225, 98, 89, 0.08), 0 0 0 8px rgba(225, 98, 89, 0.04), 0 8px 32px rgba(225, 98, 89, 0.15);
     }
 }
 
