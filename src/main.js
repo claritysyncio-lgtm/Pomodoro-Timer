@@ -6,6 +6,17 @@ class CircularPomodoroTimer {
         this.shortBreakDuration = 5; // minutes
         this.longBreakDuration = 15; // minutes
         this.longBreakInterval = 4; // long break every 4 sessions
+        
+        // Deep work settings
+        this.focusedWorkDuration = 50; // minutes
+        this.focusedBreakDuration = 10; // minutes
+        this.ultradianDuration = 90; // minutes
+        this.ultradianBreakDuration = 25; // minutes (20-30 min range)
+        this.lightWorkDuration = 15; // minutes
+        this.lightBreakDuration = 3; // minutes
+        
+        // Current mode (pomodoro or deepWork)
+        this.currentMode = 'pomodoro';
         this.currentTime = this.workDuration * 60; // seconds
         this.isRunning = false;
         this.isPaused = false;
@@ -60,18 +71,53 @@ class CircularPomodoroTimer {
             if (longBreakPage) {
                 document.getElementById('longBreak-timer-display').textContent = '15:00';
             }
+            
+            // Set deep work timer displays
+            const focusedWorkPage = document.getElementById('focusedWork-timer-page');
+            const ultradianPage = document.getElementById('ultradian-timer-page');
+            const lightWorkPage = document.getElementById('lightWork-timer-page');
+            
+            if (focusedWorkPage) {
+                document.getElementById('focusedWork-timer-display').textContent = '50:00';
+            }
+            if (ultradianPage) {
+                document.getElementById('ultradian-timer-display').textContent = '90:00';
+            }
+            if (lightWorkPage) {
+                document.getElementById('lightWork-timer-display').textContent = '15:00';
+            }
         }, 10);
     }
 
     createUI() {
         const app = document.getElementById('app');
         app.innerHTML = `
+            <!-- Mode Slider -->
+            <div class="mode-slider-container">
+                <div class="mode-slider">
+                    <div class="slider-track">
+                        <div class="slider-dot active" id="pomodoro-dot" data-mode="pomodoro">
+                            <span class="dot-label">Pomodoro</span>
+                        </div>
+                        <div class="slider-dot" id="deep-work-dot" data-mode="deepWork">
+                            <span class="dot-label">Deep Work</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Time Mode Buttons -->
-            <div class="time-modes">
+            <div class="time-modes" id="pomodoro-modes">
                 <button class="time-mode-btn" id="work-mode-btn" data-mode="work">Work Session<br><span class="mode-duration">25 min</span></button>
                 <button class="time-mode-btn" id="short-break-mode-btn" data-mode="shortBreak">Short Break<br><span class="mode-duration">5 min</span></button>
                 <button class="time-mode-btn" id="long-break-mode-btn" data-mode="longBreak">Long Break<br><span class="mode-duration">15 min</span></button>
+            </div>
+
+            <!-- Deep Work Mode Buttons -->
+            <div class="time-modes" id="deep-work-modes" style="display: none;">
+                <button class="time-mode-btn" id="focused-work-mode-btn" data-mode="focusedWork">Focused Work<br><span class="mode-duration">50 min</span></button>
+                <button class="time-mode-btn" id="ultradian-mode-btn" data-mode="ultradian">Ultradian<br><span class="mode-duration">90 min</span></button>
+                <button class="time-mode-btn" id="light-work-mode-btn" data-mode="lightWork">Light Work<br><span class="mode-duration">15 min</span></button>
             </div>
 
 
@@ -123,6 +169,54 @@ class CircularPomodoroTimer {
                 </div>
             </div>
 
+            <!-- Focused Work Timer Page -->
+            <div class="timer-page" id="focusedWork-timer-page" style="display: none;">
+                <div class="timer-container">
+                    <div class="timer-circle">
+                        <div class="timer-progress-ring" id="focusedWork-progress-ring"></div>
+                        <div class="timer-progress-dot" id="focusedWork-progress-dot"></div>
+                        <div class="clock-face" id="focusedWork-clock-face"></div>
+                        <div class="timer-inner">
+                            <div class="timer-mode">Focused Work</div>
+                            <div class="timer-display" id="focusedWork-timer-display">50:00</div>
+                            <div class="timer-status" id="focusedWork-timer-status">Ready to start</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ultradian Timer Page -->
+            <div class="timer-page" id="ultradian-timer-page" style="display: none;">
+                <div class="timer-container">
+                    <div class="timer-circle">
+                        <div class="timer-progress-ring" id="ultradian-progress-ring"></div>
+                        <div class="timer-progress-dot" id="ultradian-progress-dot"></div>
+                        <div class="clock-face" id="ultradian-clock-face"></div>
+                        <div class="timer-inner">
+                            <div class="timer-mode">Ultradian</div>
+                            <div class="timer-display" id="ultradian-timer-display">90:00</div>
+                            <div class="timer-status" id="ultradian-timer-status">Ready to start</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Light Work Timer Page -->
+            <div class="timer-page" id="lightWork-timer-page" style="display: none;">
+                <div class="timer-container">
+                    <div class="timer-circle">
+                        <div class="timer-progress-ring" id="lightWork-progress-ring"></div>
+                        <div class="timer-progress-dot" id="lightWork-progress-dot"></div>
+                        <div class="clock-face" id="lightWork-clock-face"></div>
+                        <div class="timer-inner">
+                            <div class="timer-mode">Light Work</div>
+                            <div class="timer-display" id="lightWork-timer-display">15:00</div>
+                            <div class="timer-status" id="lightWork-timer-status">Ready to start</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Control Buttons -->
             <div class="controls">
                 <button class="control-btn secondary" id="start-btn">Start</button>
@@ -133,8 +227,11 @@ class CircularPomodoroTimer {
     }
 
     createClockFace() {
-        // Create clock faces for all three timer pages
-        const clockFaces = ['work-clock-face', 'shortBreak-clock-face', 'longBreak-clock-face'];
+        // Create clock faces for all timer pages
+        const clockFaces = [
+            'work-clock-face', 'shortBreak-clock-face', 'longBreak-clock-face',
+            'focusedWork-clock-face', 'ultradian-clock-face', 'lightWork-clock-face'
+        ];
         
         clockFaces.forEach(clockFaceId => {
             const clockFace = document.getElementById(clockFaceId);
@@ -162,7 +259,34 @@ class CircularPomodoroTimer {
         // Timer controls
         document.getElementById('start-btn').addEventListener('click', () => this.toggleTimer());
 
-        // Time mode buttons
+        // Mode slider - check if elements exist
+        const pomodoroDot = document.getElementById('pomodoro-dot');
+        const deepWorkDot = document.getElementById('deep-work-dot');
+        
+        console.log('Slider elements found:', {
+            pomodoroDot: pomodoroDot,
+            deepWorkDot: deepWorkDot
+        });
+        
+        if (pomodoroDot) {
+            pomodoroDot.addEventListener('click', () => {
+                console.log('Pomodoro dot clicked');
+                this.switchMode('pomodoro');
+            });
+        } else {
+            console.error('Pomodoro dot not found!');
+        }
+        
+        if (deepWorkDot) {
+            deepWorkDot.addEventListener('click', () => {
+                console.log('Deep work dot clicked');
+                this.switchMode('deepWork');
+            });
+        } else {
+            console.error('Deep work dot not found!');
+        }
+
+        // Pomodoro mode buttons
         document.getElementById('work-mode-btn').addEventListener('click', () => {
             this.switchTimeMode('work');
         });
@@ -173,9 +297,16 @@ class CircularPomodoroTimer {
             this.switchTimeMode('longBreak');
         });
 
-
-
-
+        // Deep work mode buttons
+        document.getElementById('focused-work-mode-btn').addEventListener('click', () => {
+            this.switchTimeMode('focusedWork');
+        });
+        document.getElementById('ultradian-mode-btn').addEventListener('click', () => {
+            this.switchTimeMode('ultradian');
+        });
+        document.getElementById('light-work-mode-btn').addEventListener('click', () => {
+            this.switchTimeMode('lightWork');
+        });
     }
 
     toggleTimer() {
@@ -326,6 +457,9 @@ class CircularPomodoroTimer {
             case 'work': return this.workDuration;
             case 'shortBreak': return this.shortBreakDuration;
             case 'longBreak': return this.longBreakDuration;
+            case 'focusedWork': return this.focusedWorkDuration;
+            case 'ultradian': return this.ultradianDuration;
+            case 'lightWork': return this.lightWorkDuration;
             default: return this.workDuration;
         }
     }
@@ -425,6 +559,37 @@ class CircularPomodoroTimer {
         // Notification functionality removed - method kept for compatibility
     }
 
+    switchMode(mode) {
+        console.log(`Switching to mode: ${mode}`);
+        
+        // Update current mode
+        this.currentMode = mode;
+        
+        // Update slider dots
+        document.querySelectorAll('.slider-dot').forEach(dot => dot.classList.remove('active'));
+        const targetDot = document.getElementById(`${mode}-dot`);
+        console.log(`Target dot element:`, targetDot);
+        if (targetDot) {
+            targetDot.classList.add('active');
+            console.log(`Activated ${mode} dot`);
+        } else {
+            console.error(`Dot element ${mode}-dot not found!`);
+        }
+        
+        // Show/hide mode button groups
+        if (mode === 'pomodoro') {
+            document.getElementById('pomodoro-modes').style.display = 'flex';
+            document.getElementById('deep-work-modes').style.display = 'none';
+            // Set default to work session
+            this.switchTimeMode('work');
+        } else if (mode === 'deepWork') {
+            document.getElementById('pomodoro-modes').style.display = 'none';
+            document.getElementById('deep-work-modes').style.display = 'flex';
+            // Set default to focused work session
+            this.switchTimeMode('focusedWork');
+        }
+    }
+
     switchTimeMode(mode) {
         // Remove active class from all time mode buttons
         document.querySelectorAll('.time-mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -437,6 +602,12 @@ class CircularPomodoroTimer {
             buttonId = 'short-break-mode-btn';
         } else if (mode === 'longBreak') {
             buttonId = 'long-break-mode-btn';
+        } else if (mode === 'focusedWork') {
+            buttonId = 'focused-work-mode-btn';
+        } else if (mode === 'ultradian') {
+            buttonId = 'ultradian-mode-btn';
+        } else if (mode === 'lightWork') {
+            buttonId = 'light-work-mode-btn';
         }
         
         const button = document.getElementById(buttonId);
@@ -454,6 +625,12 @@ class CircularPomodoroTimer {
             this.currentTime = this.shortBreakDuration * 60; // 5 minutes
         } else if (mode === 'longBreak') {
             this.currentTime = this.longBreakDuration * 60; // 15 minutes
+        } else if (mode === 'focusedWork') {
+            this.currentTime = this.focusedWorkDuration * 60; // 50 minutes
+        } else if (mode === 'ultradian') {
+            this.currentTime = this.ultradianDuration * 60; // 90 minutes
+        } else if (mode === 'lightWork') {
+            this.currentTime = this.lightWorkDuration * 60; // 15 minutes
         }
         
         // Hide all timer pages

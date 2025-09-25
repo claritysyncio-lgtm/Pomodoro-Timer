@@ -96,6 +96,56 @@ body {
     transition: all 0.1s ease;
 }
 
+/* Mode Slider */
+.mode-slider-container {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+}
+
+.mode-slider {
+    background: #f0f0f0;
+    border-radius: 25px;
+    padding: 4px;
+    display: flex;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider-track {
+    display: flex;
+    position: relative;
+    width: 200px;
+}
+
+.slider-dot {
+    flex: 1;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    background: transparent;
+}
+
+.slider-dot.active {
+    background: #e16259;
+    color: white;
+    box-shadow: 0 2px 8px rgba(225, 98, 89, 0.3);
+}
+
+.slider-dot:hover:not(.active) {
+    background: rgba(225, 98, 89, 0.1);
+}
+
+.dot-label {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
 /* Time Mode Buttons */
 .time-modes {
     display: flex;
