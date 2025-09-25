@@ -672,9 +672,11 @@ class CircularPomodoroTimer {
         // Start the glow animation for the selected timer
         this.startGlowAnimation();
         
-        // Stop the timer if it's running
+        // Stop the timer if it's running and reset state
         if (this.isRunning) {
-            this.pauseTimer();
+            this.isRunning = false;
+            this.isPaused = false;
+            this.pausedTime = null;
         }
         
         // Force clear any existing interval
@@ -686,6 +688,10 @@ class CircularPomodoroTimer {
             clearInterval(this.progressInterval);
             this.progressInterval = null;
         }
+        
+        // Update buttons and status to show the timer is ready
+        this.updateButtons();
+        this.updateStatus('Ready to start');
     }
 
     startPulseAnimation() {
