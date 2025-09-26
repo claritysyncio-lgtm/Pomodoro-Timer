@@ -1,0 +1,8 @@
+# Ignore these files from Vercel deployment
+node_modules
+.git
+*.log
+.env*
+.DS_Store
+.vscode
+.idea
