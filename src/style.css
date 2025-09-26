@@ -99,7 +99,9 @@ body {
 /* Mode Slider */
 .mode-slider-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
     margin: 24px 0;
 }
 
@@ -145,6 +147,79 @@ body {
     font-weight: 500;
     white-space: nowrap;
 }
+
+/* Bell Toggle */
+.bell-toggle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bell-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    line-height: 1;
+}
+
+.bell-toggle-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(225, 98, 89, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.bell-toggle-btn:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.bell-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+.bell-toggle-btn:active {
+    transform: scale(0.95);
+    transition: all 0.1s ease;
+}
+
+.bell-toggle-btn.active {
+    background: #e16259;
+    color: white;
+    box-shadow: 0 2px 8px rgba(225, 98, 89, 0.3);
+}
+
+.bell-toggle-btn.active:hover {
+    background: #d1544a;
+    box-shadow: 0 4px 16px rgba(225, 98, 89, 0.4);
+}
+
+.bell-icon {
+    font-size: 18px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
 
 /* Time Mode Buttons */
 .time-modes {
@@ -969,4 +1044,5 @@ body {
     .setting-input:focus {
         border-color: #e16259;
     }
+    
 }

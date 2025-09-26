@@ -32,6 +32,8 @@ class CircularPomodoroTimer {
         this.vibrationEnabled = true;
         this.autoStartNext = true;
         this.focusMode = false;
+        this.bellEnabled = true;
+        this.selectedSound = 'chime'; // Default to chime sound
         this.dailyStats = this.loadDailyStats();
         this.weeklyStats = this.loadWeeklyStats();
         
@@ -46,6 +48,7 @@ class CircularPomodoroTimer {
             this.bindEvents();
             this.createClockFace();
             this.loadSettings();
+            this.loadBellSettings();
             this.updateDisplay();
             this.updateProgress();
             this.initAudio();
@@ -106,6 +109,13 @@ class CircularPomodoroTimer {
                             <span class="dot-label">Deep Work</span>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Bell Toggle -->
+                <div class="bell-toggle-container">
+                    <button class="bell-toggle-btn" id="bell-toggle-btn" title="Toggle notification sound">
+                        <span class="bell-icon">🔔</span>
+                    </button>
                 </div>
             </div>
 
@@ -312,6 +322,11 @@ class CircularPomodoroTimer {
         document.getElementById('light-work-mode-btn').addEventListener('click', () => {
             this.switchTimeMode('lightWork');
         });
+
+        // Bell toggle
+        document.getElementById('bell-toggle-btn').addEventListener('click', () => {
+            this.toggleBell();
+        });
     }
 
     toggleTimer() {
@@ -418,6 +433,7 @@ class CircularPomodoroTimer {
         this.updateDailyStats();
         this.playNotificationSound();
         this.vibrate();
+        this.playBellSound();
         
         // Auto-start break sessions
         if (this.currentSession !== 'work') {
@@ -816,8 +832,10 @@ class CircularPomodoroTimer {
     initAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('Audio context initialized successfully');
         } catch (e) {
-            console.warn('Audio not supported');
+            console.warn('Audio not supported:', e);
+            this.audioContext = null;
         }
     }
 
@@ -972,6 +990,95 @@ class CircularPomodoroTimer {
             }
         }, 5000);
     }
+
+    toggleBell() {
+        this.bellEnabled = !this.bellEnabled;
+        const bellBtn = document.getElementById('bell-toggle-btn');
+        const bellIcon = bellBtn.querySelector('.bell-icon');
+        
+        if (this.bellEnabled) {
+            bellIcon.textContent = '🔔';
+            bellBtn.classList.add('active');
+            bellBtn.title = 'Sound enabled - click to disable';
+            this.showNotification('🔔 Sound notifications enabled', 'success');
+            // Play a preview sound when enabling
+            this.playBellSound(true);
+        } else {
+            bellIcon.textContent = '🔕';
+            bellBtn.classList.remove('active');
+            bellBtn.title = 'Sound disabled - click to enable';
+            this.showNotification('🔕 Sound notifications disabled', 'info');
+        }
+        
+        this.saveBellSettings();
+    }
+
+    saveBellSettings() {
+        localStorage.setItem('pomodoro-bell-settings', JSON.stringify({
+            bellEnabled: this.bellEnabled
+        }));
+    }
+
+    loadBellSettings() {
+        const saved = localStorage.getItem('pomodoro-bell-settings');
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved);
+                this.bellEnabled = settings.bellEnabled !== undefined ? settings.bellEnabled : true;
+                
+                // Update UI
+                const bellBtn = document.getElementById('bell-toggle-btn');
+                const bellIcon = bellBtn.querySelector('.bell-icon');
+                
+                if (this.bellEnabled) {
+                    bellIcon.textContent = '🔔';
+                    bellBtn.classList.add('active');
+                    bellBtn.title = 'Sound enabled - click to disable';
+                } else {
+                    bellIcon.textContent = '🔕';
+                    bellBtn.classList.remove('active');
+                    bellBtn.title = 'Sound disabled - click to enable';
+                }
+            } catch (e) {
+                console.error('Error loading bell settings:', e);
+            }
+        }
+    }
+
+
+    playBellSound(preview = false) {
+        if (!this.bellEnabled && !preview) return;
+        if (!this.audioContext) {
+            console.warn('Audio context not available');
+            return;
+        }
+        
+        try {
+            // Resume audio context if suspended (required by some browsers)
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            
+            // Create a pleasant chime with multiple frequencies
+            const frequencies = [600, 750, 900]; // Chime frequencies
+            frequencies.forEach((freq, index) => {
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(this.audioContext.destination);
+                osc.frequency.setValueAtTime(freq, this.audioContext.currentTime + index * 0.1);
+                gain.gain.setValueAtTime(0.2, this.audioContext.currentTime + index * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.8);
+                osc.start(this.audioContext.currentTime + index * 0.1);
+                osc.stop(this.audioContext.currentTime + 0.8);
+            });
+            
+            console.log('Bell sound played successfully');
+        } catch (e) {
+            console.error('Error playing bell sound:', e);
+        }
+    }
+
 }
 
 // Initialize the app when DOM is loaded
