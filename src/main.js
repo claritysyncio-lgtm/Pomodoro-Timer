@@ -1,5 +1,7 @@
 import './style.css';
 
+// Force rebuild to fix deployment issues
+
 class CircularPomodoroTimer {
     constructor() {
         this.workDuration = 25; // minutes
