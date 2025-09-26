@@ -1,10 +1,9 @@
 // Simple service worker for PWA functionality
-const CACHE_NAME = 'pomodoro-timer-v1';
+const CACHE_NAME = 'pomodoro-timer-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/src/main.js',
-  '/src/style.css'
+  '/favicon.svg'
 ];
 
 self.addEventListener('install', (event) => {
@@ -15,6 +14,11 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip caching for dynamic assets (JS/CSS bundles)
+  if (event.request.url.includes('/assets/')) {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
